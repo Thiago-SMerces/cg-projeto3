@@ -2,8 +2,19 @@
 
 #include <cppitertools/itertools.hpp>
 
-std::vector<Piece> Movements::drawMove(Piece piece, std::vector<Piece> all_pieces) {
+std::vector<Piece> Movements::drawMove(Piece piece, std::vector<Piece> all_pieces, int player_turn) {
     this->all_pieces = all_pieces;
+    player = player_turn;
+    if (player == 1) {
+        // lim_x = -0.58f;
+        // lim_y = -0.58f;
+        advance = 0.165f;
+    }
+    else {
+        // lim_x = -0.58f;
+        // lim_y = 0.58f;
+        advance = -0.165f;
+    }
     switch (piece.type)
     {
     case 'p':
@@ -55,18 +66,18 @@ std::vector<Piece> Movements::movePawn(Piece pawn) {
     piece_moves.reserve(n_moves);
     Piece next;
     next.x_pos = pawn.x_pos;
-    next.y_pos = pawn.y_pos + 0.165f;
+    next.y_pos = pawn.y_pos + advance;
     next.z_pos = 0.04f;
     if (pawn.first_move) {
         for (int i = 0; i < n_moves; i++) {
             if (isBlocked(next, all_pieces))
                 break;
-            if (next.y_pos <= 0.58f) {
+            if (next.y_pos <= -lim_y) {
                 next.model_matrix = glm::mat4(1.0);
                 next.type = 's';
                 piece_moves.push_back(next);
                 next.x_pos = next.x_pos;
-                next.y_pos = next.y_pos + 0.165f;
+                next.y_pos = next.y_pos + advance;
             }
             else {
                 break;
@@ -91,17 +102,17 @@ std::vector<Piece> Movements::moveRook(Piece rook) {
     Piece next = {};
 
     // right horizontal
-    next.x_pos = rook.x_pos + 0.165f;
+    next.x_pos = rook.x_pos + advance;
     next.y_pos = rook.y_pos;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos <= 0.58f) {
+        if (next.x_pos <= -lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos + 0.165f;
+            next.x_pos = next.x_pos + advance;
             next.y_pos = next.y_pos;
         }
         else {
@@ -111,17 +122,17 @@ std::vector<Piece> Movements::moveRook(Piece rook) {
 
     // left horizontal
     next = {};
-    next.x_pos = rook.x_pos - 0.165f;
+    next.x_pos = rook.x_pos - advance;
     next.y_pos = rook.y_pos;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos >= -0.58f) {
+        if (next.x_pos >= lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos - 0.165f;
+            next.x_pos = next.x_pos - advance;
             next.y_pos = next.y_pos;
         }
         else {
@@ -132,17 +143,17 @@ std::vector<Piece> Movements::moveRook(Piece rook) {
     // vertical up
     next = {};
     next.x_pos = rook.x_pos;
-    next.y_pos = rook.y_pos + 0.165f;
+    next.y_pos = rook.y_pos + advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.y_pos <= 0.58f) {
+        if (next.y_pos <= -lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
             next.x_pos = next.x_pos;
-            next.y_pos = next.y_pos + 0.165f;
+            next.y_pos = next.y_pos + advance;
         }
         else {
             break;
@@ -151,17 +162,17 @@ std::vector<Piece> Movements::moveRook(Piece rook) {
     // vertical down
     next = {};
     next.x_pos = rook.x_pos;
-    next.y_pos = rook.y_pos - 0.165f;
+    next.y_pos = rook.y_pos - advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.y_pos >= -0.58f) {
+        if (next.y_pos >= lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
             next.x_pos = next.x_pos;
-            next.y_pos = next.y_pos - 0.165f;
+            next.y_pos = next.y_pos - advance;
         }
         else {
             break;
@@ -176,65 +187,65 @@ std::vector<Piece> Movements::moveKnight(Piece knight) {
     Piece next = {};
     
     // horizontal right
-    next.x_pos = knight.x_pos + (2 * 0.165f);
-    next.y_pos = knight.y_pos + 0.165f;
+    next.x_pos = knight.x_pos + (2 * advance);
+    next.y_pos = knight.y_pos + advance;
     next.z_pos = 0.04f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= 0.58f && next.y_pos <= 0.58f) {
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= -lim_x && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
-    next.y_pos = knight.y_pos - 0.165f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= 0.58f && next.y_pos >= -0.58f) {
+    next.y_pos = knight.y_pos - advance;
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= -lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // horizontal left
-    next.x_pos = knight.x_pos - (2 * 0.165f);
-    next.y_pos = knight.y_pos + 0.165f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >=- 0.58f && next.y_pos <= 0.58f) {
+    next.x_pos = knight.x_pos - (2 * advance);
+    next.y_pos = knight.y_pos + advance;
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >=- -lim_x && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
-    next.y_pos = knight.y_pos - 0.165f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= -0.58f && next.y_pos >= -0.58f) {
+    next.y_pos = knight.y_pos - advance;
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // vertical up
-    next.x_pos = knight.x_pos + 0.165f;
-    next.y_pos = knight.y_pos + (2 * 0.165f);
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= 0.58f && next.y_pos <= 0.58f) {
+    next.x_pos = knight.x_pos + advance;
+    next.y_pos = knight.y_pos + (2 * advance);
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= -lim_x && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
-    next.x_pos = knight.x_pos - 0.165f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= -0.58f && next.y_pos <= 0.58f) {
+    next.x_pos = knight.x_pos - advance;
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= lim_x && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // vertical down
-    next.x_pos = knight.x_pos + 0.165f;
-    next.y_pos = knight.y_pos - (2 * 0.165f);
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= 0.58f && next.y_pos >= -0.58f) {
+    next.x_pos = knight.x_pos + advance;
+    next.y_pos = knight.y_pos - (2 * advance);
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos <= -lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
-    next.x_pos = knight.x_pos - 0.165f;
-    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= -0.58f && next.y_pos >= -0.58f) {
+    next.x_pos = knight.x_pos - advance;
+    if (!isBlocked(next.x_pos, next.y_pos, all_pieces) && next.x_pos >= lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
@@ -250,18 +261,18 @@ std::vector<Piece> Movements::moveBishop(Piece bishop) {
     Piece next = {};
 
     // right diagonal up
-    next.x_pos = bishop.x_pos + 0.165f;
-    next.y_pos = bishop.y_pos + 0.165f;
+    next.x_pos = bishop.x_pos + advance;
+    next.y_pos = bishop.y_pos + advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos <= 0.58f && next.y_pos <= 0.58f) {
+        if (next.x_pos <= -lim_x && next.y_pos <= -lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos + 0.165f;
-            next.y_pos = next.y_pos + 0.165f;
+            next.x_pos = next.x_pos + advance;
+            next.y_pos = next.y_pos + advance;
         }
         else {
             break;
@@ -270,18 +281,18 @@ std::vector<Piece> Movements::moveBishop(Piece bishop) {
 
     // left diagonal up
     next = {};
-    next.x_pos = bishop.x_pos - 0.165f;
-    next.y_pos = bishop.y_pos + 0.165f;
+    next.x_pos = bishop.x_pos - advance;
+    next.y_pos = bishop.y_pos + advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos >= -0.58f && next.y_pos <= 0.58f) {
+        if (next.x_pos >= lim_x && next.y_pos <= -lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos - 0.165f;
-            next.y_pos = next.y_pos + 0.165f;
+            next.x_pos = next.x_pos - advance;
+            next.y_pos = next.y_pos + advance;
         }
         else {
             break;
@@ -290,18 +301,18 @@ std::vector<Piece> Movements::moveBishop(Piece bishop) {
 
     // right diagonal down
     next = {};
-    next.x_pos = bishop.x_pos + 0.165f;
-    next.y_pos = bishop.y_pos - 0.165f;
+    next.x_pos = bishop.x_pos + advance;
+    next.y_pos = bishop.y_pos - advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos <= 0.58f && next.y_pos >= -0.58f) {
+        if (next.x_pos <= -lim_x && next.y_pos >= lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos + 0.165f;
-            next.y_pos = next.y_pos - 0.165f;
+            next.x_pos = next.x_pos + advance;
+            next.y_pos = next.y_pos - advance;
         }
         else {
             break;
@@ -309,18 +320,18 @@ std::vector<Piece> Movements::moveBishop(Piece bishop) {
     }
     // left diagonal down
     next = {};
-    next.x_pos = bishop.x_pos - 0.165f;
-    next.y_pos = bishop.y_pos - 0.165f;
+    next.x_pos = bishop.x_pos - advance;
+    next.y_pos = bishop.y_pos - advance;
     next.z_pos = 0.04f;
     for (int i = 0; i < n_moves; i++) {
         if (isBlocked(next, all_pieces))
             break;
-        if (next.x_pos >= -0.58f && next.y_pos >= -0.58f) {
+        if (next.x_pos >= lim_x && next.y_pos >= lim_x) {
             next.model_matrix = glm::mat4(1.0);
             next.type = 's';
             piece_moves.push_back(next);
-            next.x_pos = next.x_pos - 0.165f;
-            next.y_pos = next.y_pos - 0.165f;
+            next.x_pos = next.x_pos - advance;
+            next.y_pos = next.y_pos - advance;
         }
         else {
             break;
@@ -346,73 +357,73 @@ std::vector<Piece> Movements::moveKing(Piece king) {
     
     // vertical up
     next.x_pos = king.x_pos;
-    next.y_pos = king.y_pos + 0.165f;
+    next.y_pos = king.y_pos + advance;
     next.z_pos = 0.04f;
-    if (!isBlocked(next, all_pieces) && next.y_pos <= 0.58f) {
+    if (!isBlocked(next, all_pieces) && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
     
     // right diagonal up
-    next.x_pos += 0.165f;
-    if (!isBlocked(next, all_pieces) && next.x_pos <= 0.58f && next.y_pos <= 0.58f) {
+    next.x_pos += advance;
+    if (!isBlocked(next, all_pieces) && next.x_pos <= -lim_x && next.y_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // right horizontal
-    next.y_pos -= 0.165f;
-    if (!isBlocked(next, all_pieces) && next.y_pos >= -0.58f && next.x_pos <= 0.58f) {
+    next.y_pos -= advance;
+    if (!isBlocked(next, all_pieces) && next.y_pos >= lim_x && next.x_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
     
     // right diagonal down
-    next.y_pos -= 0.165f;
-    if (!isBlocked(next, all_pieces) && next.y_pos >= -0.58f && next.x_pos <= 0.58f) {
+    next.y_pos -= advance;
+    if (!isBlocked(next, all_pieces) && next.y_pos >= lim_x && next.x_pos <= -lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // vertical down
-    next.x_pos -= 0.165f;
-    if (!isBlocked(next, all_pieces) && next.x_pos >= -0.58f && next.y_pos >= -0.58f) {
+    next.x_pos -= advance;
+    if (!isBlocked(next, all_pieces) && next.x_pos >= lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // left diagonal down
-    next.x_pos -= 0.165f;
-    if (!isBlocked(next, all_pieces) && next.x_pos >= -0.58f && next.y_pos >= -0.58f) {
+    next.x_pos -= advance;
+    if (!isBlocked(next, all_pieces) && next.x_pos >= lim_x && next.y_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // left horizontal
-    next.y_pos += 0.165f;
-    if (!isBlocked(next, all_pieces) && next.y_pos <= 0.58f && next.x_pos >= -0.58f) {
+    next.y_pos += advance;
+    if (!isBlocked(next, all_pieces) && next.y_pos <= -lim_x && next.x_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // left diagonal up
-    next.y_pos += 0.165f;
-    if (!isBlocked(next, all_pieces) && next.y_pos <= 0.58f && next.x_pos >= -0.58f) {
+    next.y_pos += advance;
+    if (!isBlocked(next, all_pieces) && next.y_pos <= -lim_x && next.x_pos >= lim_x) {
         next.model_matrix = glm::mat4(1.0);
         next.type = 's';
         piece_moves.push_back(next);
     }
 
     // castling
-    float first = king.x_pos + (0.165f);
-    float second = king.x_pos + (2 * 0.165f);
+    float first = king.x_pos + (advance);
+    float second = king.x_pos + (2 * advance);
     
     next.x_pos = second;
     next.y_pos = king.y_pos;

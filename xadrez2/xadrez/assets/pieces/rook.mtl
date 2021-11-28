@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 12.01.2012 15:41:59
+# File Created: 12.01.2012 14:55:11
 
-newmtl pawn
+newmtl rook
 	Ns 36.0000
 	Ni 1.5000
 	d 1.0000
@@ -12,5 +12,5 @@ newmtl pawn
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.5400 0.5400 0.5400
 	Ke 0.0000 0.0000 0.0000
-	map_Ka pawn.jpg
-	map_Kd pawn.jpg
+	map_Ka rook2.jpg
+	map_Kd rook2.jpg

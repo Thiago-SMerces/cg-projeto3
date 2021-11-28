@@ -40,32 +40,32 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::vec3 player2_position{};
 
   std::vector<std::string> filepaths{
-                                "pieces/rook.obj",
-                                "pieces/knight.obj",
-                                "pieces/bishop.obj",
+                                "pieces/rook4.obj",
+                                "pieces/knight4.obj",
+                                "pieces/bishop4.obj",
                                 "pieces/queen.obj",
-                                "pieces/king.obj",
-                                "pieces/pawn.obj"
+                                "pieces/king4.obj",
+                                "pieces/pawn4.obj"
                                 };
 
   std::vector<std::string> wmappaths{
                                 "maps/board.JPG",
-                                "maps/wrook.jpg",
-                                "maps/wknight.jpg",
-                                "maps/wbishop.jpg",
-                                "maps/queen.jpg",
-                                "maps/wking.jpg",
-                                "maps/wpawn.jpg"
+                                "maps/wrook2.jpg",
+                                "maps/wknight2.jpg",
+                                "maps/wbishop2.jpg",
+                                "maps/queen2.jpg",
+                                "maps/wking2.jpg",
+                                "maps/wpawn2.jpg"
                                 };
 
   std::vector<std::string> mappaths{
                                 "maps/board.JPG",
-                                "maps/rook.jpg",
-                                "maps/knight.jpg",
-                                "maps/bishop.jpg",
-                                "maps/queen.jpg",
-                                "maps/king.jpg",
-                                "maps/pawn.jpg"
+                                "maps/rook4_rook.jpg",
+                                "maps/knight4_knight.jpg",
+                                "maps/bishop4_bishop.jpg",
+                                "maps/queen2.jpg",
+                                "maps/king4_king.jpg",
+                                "maps/pawn4_pawn.jpg"
                                 };
   std::vector<char> piece_types{
                                 'r',
@@ -88,7 +88,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
 
   // Shaders
   std::vector<const char*> m_shaderNames{"texture", "blinnphong", "phong",
-                                         "gouraud", "normal",     "depth"};
+                                         "gouraud", "normal", "depth"};
   std::vector<GLuint> m_programs;
   int m_currentProgramIndex{};
 
@@ -96,7 +96,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   // 0: triplanar; 1: cylindrical; 2: spherical; 3: from mesh
   int m_mappingMode{};
 
-  // Light and material properties (for board)
+  // Light properties (for board)
   glm::vec4 m_lightDir{-1.0f, -1.0f, -1.0f, 0.0f};
   glm::vec4 m_Ia{1.0f};
   glm::vec4 m_Id{1.0f};

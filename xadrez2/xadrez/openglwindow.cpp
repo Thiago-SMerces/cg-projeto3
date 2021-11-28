@@ -5,7 +5,7 @@
 #include <cppitertools/itertools.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtx/fast_trigonometry.hpp>
-// #include <iostream>
+#include <iostream>
 
 #include <glm/gtc/matrix_inverse.hpp>
 #include "imfilebrowser.h"
@@ -104,7 +104,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 // std::cerr << "IT'S OFFICIAL" << std::endl;
               //   freopen( "log.txt", "w", stdout );
               // freopen( "log.txt", "w", stderr );
-                piece_moves = mover.drawMove(piece, player1_pieces);
+                piece_moves = mover.drawMove(piece, player1_pieces, player_turn);
                 for (auto & move : piece_moves) {
                   loadModel(getAssetsPath() + "selected/tile.obj", move, "maps/pattern.png");
                   // std::cerr << "pmove x: " << move.x_pos << " pmove y: " << move.y_pos << std::endl;
@@ -117,12 +117,14 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 selector = false;
                 move_id = 0;
                 
-            // freopen( "log.txt", "a", stdout );
-            //   freopen( "log.txt", "a", stderr );
-              // std::cerr << "TILE\ntile x: " << possible_moves[1].x_pos << " tile y: " << possible_moves[1].y_pos
-              //  << "\nMOVES\n" << std::endl;
                 for (auto& move : piece_moves) {
-              // std::cerr << "move x: " << move.x_pos << " move y: " << move.y_pos << std::endl;
+                  freopen( "log.txt", "w", stdout );
+  freopen( "log.txt", "w", stderr );
+  std::cout << "output" << std::endl;
+  std::cerr << "Error" << std::endl;
+                  std::cerr << "pmove x: " << move.x_pos << " pmove y: " << move.y_pos << std::endl;
+
+              std::cerr << "move x: " << move.x_pos << " move y: " << move.y_pos << std::endl;
               // printf("move x: %f move y: %f piece x: %f piece y: %f", possible_moves[0].x_pos, possible_moves[0].y_pos,
               // piece.x_pos, piece.y_pos);
               if (compareFloat(possible_moves[1].x_pos, move.x_pos) && compareFloat(possible_moves[1].y_pos, move.y_pos)) {
@@ -130,10 +132,50 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 player1_pieces[selected_piece].x_pos = move.x_pos;
                 player1_pieces[selected_piece].y_pos = move.y_pos;
                 player1_pieces[selected_piece].first_move = false;
+                player_turn = 2;
                 // std::cerr << "x: " << player1_pieces[selected_piece].x_pos << " y: " << player1_pieces[selected_piece].y_pos << std::endl;
 
                 // std::cerr << "IT'S OFFICIAL" << std::endl;
               }
+            }
+            }
+          }
+          else {
+            if (!selector) {
+            int piece_index = 0;
+            // freopen( "log.txt", "w", stdout );
+          freopen( "log.txt", "w", stderr );
+            std::cerr << "pieces2 len " << player2_pieces.size() << " 1 len" << player1_pieces.size() << std::endl;
+
+              std::cerr << "move x: " << possible_moves[0].x_pos << " move y: " << possible_moves[0].y_pos << std::endl;
+
+            for (auto& piece : player2_pieces) {
+                          std::cerr << "p2move x: " << piece.x_pos << " p2move y: " << piece.y_pos << std::endl;
+
+              if (compareFloat(possible_moves[0].x_pos, piece.x_pos) && compareFloat(possible_moves[0].y_pos, piece.y_pos)) {
+                selected_piece = piece_index;
+                selector = true;
+                move_id = 1;
+                piece_moves = mover.drawMove(piece, player2_pieces, player_turn);
+                for (auto & move : piece_moves) {
+                  loadModel(getAssetsPath() + "selected/tile.obj", move, "maps/pattern.png");
+                }
+                std::cerr << "IT'S A MATCH!!! " << std::endl;
+              }
+              piece_index++;
+            }
+            }
+            else {
+                selector = false;
+                move_id = 0;
+                
+                for (auto& move : piece_moves) {
+              if (compareFloat(possible_moves[1].x_pos, move.x_pos) && compareFloat(possible_moves[1].y_pos, move.y_pos)) {
+                player2_pieces[selected_piece].x_pos = move.x_pos;
+                player2_pieces[selected_piece].y_pos = move.y_pos;
+                player2_pieces[selected_piece].first_move = false;
+                player_turn = 1;
+                }
             }
             }
           }
@@ -168,13 +210,13 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
       if (event.key.keysym.sym == SDLK_SPACE) {
         if (selector) {
           Piece select;
-          select.model_matrix = glm::mat4(1.0);
+          select.model_matrix = glm::mat4(1.0f);
           select.type = 's';
           select.x_pos = possible_moves[0].x_pos;
           select.y_pos = possible_moves[0].y_pos;
           select.z_pos = possible_moves[0].z_pos;
           possible_moves.push_back(select);
-          loadModel(getAssetsPath() + "selected/tile.obj", possible_moves[1], "maps/tile2.jpg");
+          loadModel(getAssetsPath() + "selected/tile.obj", possible_moves[1], "maps/tile.jpg");
         }
       else {
         // selector = true;
@@ -206,13 +248,13 @@ void OpenGLWindow::initializeGL() {
   loadModel(getAssetsPath() + "board/board.obj", board, mappaths[0].c_str());
   // current_pos.model_matrix = glm::mat4(1.0);
   Piece current_pos;
-  current_pos.model_matrix = glm::mat4(1.0);
+  current_pos.model_matrix = glm::mat4(1.0f);
   current_pos.type = 's';
   current_pos.x_pos = -0.58f;
   current_pos.y_pos = -0.58f;
   current_pos.z_pos = 0.042f;
 	possible_moves.push_back(current_pos);
-  loadModel(getAssetsPath() + "selected/tile.obj", possible_moves[0], "maps/tile2.jpg");
+  loadModel(getAssetsPath() + "selected/tile.obj", possible_moves[0], "maps/tile.jpg");
   int pieces_total = 16;
   player1_pieces.reserve(pieces_total);
   player2_pieces.reserve(pieces_total);
@@ -220,49 +262,118 @@ void OpenGLWindow::initializeGL() {
   int down = 3;
   for (auto index : iter::range(pieces_total)) {
     Piece p;
-    p.model_matrix = glm::mat4(1.0);
-		player1_pieces.push_back(p);
     if (index < 5) {
+      p.model_matrix = glm::mat4(1.0f);
+		  player1_pieces.push_back(p);
       player1_pieces[index].type = piece_types[index];
+
       if (index == 3)
         loadModel(getAssetsPath() + filepaths[index].c_str(), player1_pieces[index], wmappaths[index + 2].c_str());
       else
         loadModel(getAssetsPath() + filepaths[index].c_str(), player1_pieces[index], wmappaths[index + 1].c_str());
     }
     else if (index < 8) {
-      player1_pieces[index].type = piece_types[index - down];
-      loadModel(getAssetsPath() + filepaths[index-down].c_str(), player1_pieces[index], wmappaths[index-down + 1].c_str());
+      player1_pieces.push_back(player1_pieces[index - down]);
+      // loadModel(getAssetsPath() + filepaths[index-down].c_str(), player1_pieces[index], wmappaths[index-down + 1].c_str());
       down += 2;
     }
-    else {
+    else if (index == 8){
+      p.model_matrix = glm::mat4(1.0f);
+		  player1_pieces.push_back(p);
       player1_pieces[index].type = piece_types[piece_types.size() - 1];
       loadModel(getAssetsPath() + filepaths[filepaths.size() - 1].c_str(), player1_pieces[index], wmappaths[filepaths.size() - 1 + 1].c_str());
     }
+    else {
+      player1_pieces.push_back(player1_pieces[index - 1]);
+    }
   }
 
-  for (auto index2 : iter::range(4)) {
+  // player2_pieces = player1_pieces;
+  down = 3;
+  for (auto index : iter::range(pieces_total)) {
     Piece p;
-    p.model_matrix = glm::mat4(1.0);
-		player2_pieces.push_back(p);
-    if (index2 < 5) {
-      player2_pieces[index2].type = piece_types[index2];
-      if (index2 == 3)
-        loadModel(getAssetsPath() + filepaths[index2].c_str(), player2_pieces[index2], mappaths[index2 + 2].c_str());
+    if (index < 5) {
+      p.model_matrix = glm::mat4(1.0f);
+		  player2_pieces.push_back(p);
+      player2_pieces[index].type = piece_types[index];
+
+      if (index == 3)
+        loadModel(getAssetsPath() + filepaths[index].c_str(), player2_pieces[index], mappaths[index + 2].c_str());
       else
-        loadModel(getAssetsPath() + filepaths[index2].c_str(), player2_pieces[index2], mappaths[index2 + 1].c_str());
+        loadModel(getAssetsPath() + filepaths[index].c_str(), player2_pieces[index], mappaths[index + 1].c_str());
     }
-    else if (index2 < 8) {
-      player2_pieces[index2].type = piece_types[index2 - down];
-      loadModel(getAssetsPath() + filepaths[index2-down].c_str(), player2_pieces[index2], mappaths[index2-down + 1].c_str());
+    else if (index < 8) {
+      player2_pieces.push_back(player2_pieces[index - down]);
+      // loadModel(getAssetsPath() + filepaths[index-down].c_str(), player1_pieces[index], wmappaths[index-down + 1].c_str());
       down += 2;
     }
+    else if (index == 8){
+      p.model_matrix = glm::mat4(1.0f);
+		  player2_pieces.push_back(p);
+      player2_pieces[index].type = piece_types[piece_types.size() - 1];
+      loadModel(getAssetsPath() + filepaths[filepaths.size() - 1].c_str(), player2_pieces[index], mappaths[filepaths.size() - 1 + 1].c_str());
+    }
     else {
-      player2_pieces[index2].type = piece_types[piece_types.size() - 1];
-      loadModel(getAssetsPath() + filepaths[filepaths.size() - 1].c_str(), player2_pieces[index2], mappaths[filepaths.size() - 1 + 1].c_str());
+      player2_pieces.push_back(player2_pieces[index - 1]);
     }
   }
 
+  // Copying vector by copy function
+  // std::copy(player1_pieces.begin(), player1_pieces.end(), std::back_inserter(player2_pieces));
+  // for (auto& piece: player2_pieces) {
+  //   switch (piece.type)
+  //     {
+  //     case 'p':
+  //         loadModel(getAssetsPath() + filepaths[5].c_str(), piece, mappaths[6].c_str());
+  //         break;
+  //     case 'r':
+  //         loadModel(getAssetsPath() + filepaths[0].c_str(), piece, mappaths[1].c_str());
+  //         break;
+  //     case 'c':
+  //         loadModel(getAssetsPath() + filepaths[1].c_str(), piece, mappaths[2].c_str());
+  //         break;
+  //     case 'b':
+  //         loadModel(getAssetsPath() + filepaths[2].c_str(), piece, mappaths[3].c_str());
+  //         break;
+  //     case 'q':
+  //         loadModel(getAssetsPath() + filepaths[3].c_str(), piece, mappaths[4].c_str());
+  //         break;
+  //     case 'k':
+  //         loadModel(getAssetsPath() + filepaths[4].c_str(), piece, mappaths[5].c_str());
+  //         break;
+  //     default:
+  //         break;
+  //     }
+  // }
+  // player2_pieces = player1_pieces;
+
+  // for (auto index2 : iter::range(5)) {
+  //   Piece p;
+  //   p.model_matrix = glm::mat4(1.0f);
+	// 	player2_pieces.push_back(p);
+  //   if (index2 < 5) {
+  //     player2_pieces[index2].type = piece_types[index2];
+  //     if (index2 == 3)
+  //       loadModel(getAssetsPath() + filepaths[index2].c_str(), player2_pieces[index2], mappaths[index2 + 2].c_str());
+  //     else
+  //       loadModel(getAssetsPath() + filepaths[index2].c_str(), player2_pieces[index2], mappaths[index2 + 1].c_str());
+  //   }
+  //   else if (index2 < 8) {
+  //     player2_pieces[index2].type = piece_types[index2 - down];
+  //     loadModel(getAssetsPath() + filepaths[index2-down].c_str(), player2_pieces[index2], mappaths[index2-down + 1].c_str());
+  //     down += 2;
+  //   }
+  //   else {
+  //     player2_pieces[index2].type = piece_types[piece_types.size() - 1];
+  //     loadModel(getAssetsPath() + filepaths[filepaths.size() - 1].c_str(), player2_pieces[index2], mappaths[filepaths.size() - 1 + 1].c_str());
+  //   }
+  // }
+
   m_mappingMode = 3;  // "From mesh" option
+  // freopen( "log.txt", "w", stdout );
+  // freopen( "log.txt", "w", stderr );
+  // std::cout << "output" << std::endl;
+  // std::cerr << "Error" << std::endl;
 
   // Initial trackball spin
   m_trackBallModel.setAxis(glm::normalize(glm::vec3(1, 1, 1)));
@@ -378,7 +489,8 @@ void OpenGLWindow::paintGL() {
   int index = 0;
 
   for (auto & piece : player1_pieces) {
-    if (!piece.is_positioned) {
+    // if (piece.render) {
+      if (!piece.is_positioned) {
       piece.x_pos = x_pos;
       piece.y_pos = y_pos;
       piece.z_pos = p_scale;
@@ -406,6 +518,8 @@ void OpenGLWindow::paintGL() {
     abcg::glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
 
 		piece.model.render(piece.trianglesDraw);
+    // piece.render = false;
+    // }
   }
 
   x_pos = -0.58f;
@@ -419,6 +533,30 @@ void OpenGLWindow::paintGL() {
       piece.y_pos = y_pos;
       piece.z_pos = p_scale;
       piece.is_positioned = true;
+
+      // switch (piece.type)
+      // {
+      // case 'p':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[6].c_str());
+      //     break;
+      // case 'r':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[1].c_str());
+      //     break;
+      // case 'c':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[2].c_str());
+      //     break;
+      // case 'b':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[3].c_str());
+      //     break;
+      // case 'q':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[4].c_str());
+      //     break;
+      // case 'k':
+      //     piece.model.loadDiffuseTexture(getAssetsPath() + mappaths[5].c_str());
+      //     break;
+      // default:
+      //     break;
+      // }
     }
     piece.position = glm::vec3(piece.x_pos, piece.y_pos, piece.z_pos);
 		// piece.model_matrix = glm::rotate(piece.model_matrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));

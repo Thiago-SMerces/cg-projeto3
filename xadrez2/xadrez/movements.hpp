@@ -8,9 +8,13 @@
 
 class Movements {
  public:
-  std::vector<Piece> drawMove(Piece piece, std::vector<Piece> all_pieces);
+  std::vector<Piece> drawMove(Piece piece, std::vector<Piece> all_pieces, int player_turn);
 
  private:
+  int player{};
+  float lim_x = -0.58f;
+  float lim_y = -0.58f;
+  float advance = 0.165f;
   std::vector<Piece> all_pieces;
 
   std::vector<Piece> movePawn(Piece pawn);
