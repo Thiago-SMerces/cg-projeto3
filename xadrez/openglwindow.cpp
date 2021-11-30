@@ -50,32 +50,45 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
 
   // Keyboard events
   	if (event.type == SDL_KEYDOWN) {
-    	if (event.key.keysym.sym == SDLK_LEFT && possible_moves[move_id].x_pos > -0.58f) {
-        // if (!selector)
-          // possible_moves[move_id].x_pos -= 0.165f;
-        // else
-          possible_moves[move_id].x_pos -= 0.165f;
-    		// m_panSpeed = -1.0f;
+    	if (event.key.keysym.sym == SDLK_LEFT) {
+        if (player_turn == 1) {
+          if (possible_moves[move_id].x_pos > -0.58f)
+            possible_moves[move_id].x_pos -= 0.165f;
+        }
+        else {
+          if (possible_moves[move_id].x_pos < 0.55f)
+            possible_moves[move_id].x_pos += 0.165f;
+        }
 		  }
-      if (event.key.keysym.sym == SDLK_RIGHT && possible_moves[move_id].x_pos < 0.415f) {
-        // if (!selector)
-          // possible_moves[move_id].x_pos += 0.165f;
-        // else
-          possible_moves[move_id].x_pos += 0.165f;
-        // possible_moves[0].position = glm::vec3(possible_moves[0].position.x - 0.165f, possible_moves[0].position.y, 0.05);
-    		// m_panSpeed = -1.0f;
+      if (event.key.keysym.sym == SDLK_RIGHT) {
+        if (player_turn == 1) {
+          if (possible_moves[move_id].x_pos < 0.415f)
+            possible_moves[move_id].x_pos += 0.165f;
+        }
+        else {
+          if (possible_moves[move_id].x_pos > -0.415f)
+            possible_moves[move_id].x_pos -= 0.165f;
+        }
 		  }
-      if (event.key.keysym.sym == SDLK_UP && possible_moves[move_id].y_pos < 0.58f) {
-        	// if (!selector)
-            // possible_moves[move_id].y_pos += 0.165f;
-          // else
-            possible_moves[move_id].y_pos += 0.165f;
+      if (event.key.keysym.sym == SDLK_UP) {
+          if (player_turn == 1) {
+            if (possible_moves[move_id].y_pos < 0.55f) 
+              possible_moves[move_id].y_pos += 0.165f;
+          }
+          else {
+            if (possible_moves[move_id].y_pos > -0.55f) 
+              possible_moves[move_id].y_pos -= 0.165f;
+          } 
 		    }
-      	if (event.key.keysym.sym == SDLK_DOWN &&  possible_moves[move_id].y_pos > -0.58f) {
-        	// if (!selector)
-            // possible_moves[move_id].y_pos -= 0.165f;
-          // else
-            possible_moves[move_id].y_pos -= 0.165f;
+      	if (event.key.keysym.sym == SDLK_DOWN) {
+          if (player_turn == 1) {
+            if (possible_moves[move_id].y_pos > -0.58f)
+              possible_moves[move_id].y_pos -= 0.165f;
+          }
+          else {
+            if (possible_moves[move_id].y_pos < 0.55f)
+              possible_moves[move_id].y_pos += 0.165f;
+          }
 		    }
 		// if (event.key.keysym.sym == SDLK_a) {
     // 		m_truckSpeed = -1.0f;
@@ -104,7 +117,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 // std::cerr << "IT'S OFFICIAL" << std::endl;
               //   freopen( "log.txt", "w", stdout );
               // freopen( "log.txt", "w", stderr );
-                piece_moves = mover.drawMove(piece, player1_pieces, player_turn);
+                piece_moves = mover.drawMove(piece, player1_pieces, player2_pieces, player_turn);
                 for (auto & move : piece_moves) {
                   loadModel(getAssetsPath() + "selected/tile.obj", move, "maps/pattern.png");
                   // std::cerr << "pmove x: " << move.x_pos << " pmove y: " << move.y_pos << std::endl;
@@ -133,6 +146,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 player1_pieces[selected_piece].y_pos = move.y_pos;
                 player1_pieces[selected_piece].first_move = false;
                 player_turn = 2;
+                // velocity = 0.0001f;
                 // std::cerr << "x: " << player1_pieces[selected_piece].x_pos << " y: " << player1_pieces[selected_piece].y_pos << std::endl;
 
                 // std::cerr << "IT'S OFFICIAL" << std::endl;
@@ -156,7 +170,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 selected_piece = piece_index;
                 selector = true;
                 move_id = 1;
-                piece_moves = mover.drawMove(piece, player2_pieces, player_turn);
+                piece_moves = mover.drawMove(piece, player2_pieces, player1_pieces, player_turn);
                 for (auto & move : piece_moves) {
                   loadModel(getAssetsPath() + "selected/tile.obj", move, "maps/pattern.png");
                 }
@@ -175,6 +189,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
                 player2_pieces[selected_piece].y_pos = move.y_pos;
                 player2_pieces[selected_piece].first_move = false;
                 player_turn = 1;
+                // velocity = 0.0001f;
                 }
             }
             }
@@ -262,11 +277,11 @@ void OpenGLWindow::initializeGL() {
   int down = 3;
   for (auto index : iter::range(pieces_total)) {
     Piece p;
+    p.index = index;
     if (index < 5) {
       p.model_matrix = glm::mat4(1.0f);
 		  player1_pieces.push_back(p);
       player1_pieces[index].type = piece_types[index];
-
       if (index == 3)
         loadModel(getAssetsPath() + filepaths[index].c_str(), player1_pieces[index], wmappaths[index + 2].c_str());
       else
@@ -292,6 +307,7 @@ void OpenGLWindow::initializeGL() {
   down = 3;
   for (auto index : iter::range(pieces_total)) {
     Piece p;
+    p.index = index;
     if (index < 5) {
       p.model_matrix = glm::mat4(1.0f);
 		  player2_pieces.push_back(p);
@@ -376,7 +392,7 @@ void OpenGLWindow::initializeGL() {
   // std::cerr << "Error" << std::endl;
 
   // Initial trackball spin
-  m_trackBallModel.setAxis(glm::normalize(glm::vec3(1, 1, 1)));
+  m_trackBallModel.setAxis(glm::normalize(glm::vec3(0.0f, 0.5f, 0.0f)));
   m_trackBallModel.setVelocity(0.0f);
 }
 
@@ -848,17 +864,38 @@ void OpenGLWindow::terminateGL() {
 
 void OpenGLWindow::update() {
   m_modelMatrix = m_trackBallModel.getRotation();
+  if (player_turn == 1) {
+    modifier = 1;
+    // m_modelMatrix = glm::rotate(m_modelMatrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 0.0f));
+  }
+  else {
+    modifier = -1;
+    m_modelMatrix = glm::rotate(m_modelMatrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+  }
   for (auto& piece : player1_pieces) {
     piece.model_matrix = m_trackBallModel.getRotation();
-    piece.model_matrix = glm::translate(piece.model_matrix, glm::vec3(piece.x_pos, piece.y_pos, piece.z_pos));
+    piece.model_matrix = glm::translate(piece.model_matrix, glm::vec3(piece.x_pos * modifier, 
+      piece.y_pos * modifier, piece.z_pos));
+    
+    if (player_turn == 2) {
+      piece.model_matrix = glm::rotate(piece.model_matrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
   }
   for (auto& piece : player2_pieces) {
     piece.model_matrix = m_trackBallModel.getRotation();
-    piece.model_matrix = glm::translate(piece.model_matrix, glm::vec3(piece.x_pos, piece.y_pos, piece.z_pos));
+    piece.model_matrix = glm::translate(piece.model_matrix, glm::vec3(piece.x_pos * modifier, 
+      piece.y_pos * modifier, piece.z_pos));
+    if (player_turn == 2) {
+      piece.model_matrix = glm::rotate(piece.model_matrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
   }
   for (auto& move : piece_moves) {
     move.model_matrix = m_trackBallModel.getRotation();
-    move.model_matrix = glm::translate(move.model_matrix, glm::vec3(move.x_pos, move.y_pos, move.z_pos));
+    move.model_matrix = glm::translate(move.model_matrix, glm::vec3(move.x_pos * modifier, 
+      move.y_pos * modifier, move.z_pos));
+    if (player_turn == 2) {
+      move.model_matrix = glm::rotate(move.model_matrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
   }
   for (auto& move : possible_moves) {
     move.model_matrix = m_trackBallModel.getRotation();
@@ -866,8 +903,18 @@ void OpenGLWindow::update() {
 	// // possible_moves[0].model_matrix = glm::rotate(possible_moves[0].model_matrix, glm::wrapAngle(glm::radians(90.0f)), glm::vec3(1.0f, 0.0f, 0.25f));
 	// pos.model_matrix = glm::translate(pos.model_matrix, pos.position);
 	// pos.model_matrix = glm::scale(pos.model_matrix, glm::vec3(0.10f, 0.10f, 0.165f));
-    move.model_matrix = glm::translate(move.model_matrix, glm::vec3(move.x_pos, move.y_pos, move.z_pos));
+    move.model_matrix = glm::translate(move.model_matrix, glm::vec3(move.x_pos * modifier, 
+      move.y_pos * modifier, move.z_pos));
+    if (player_turn == 2) {
+      move.model_matrix = glm::rotate(move.model_matrix, glm::wrapAngle(glm::radians(180.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
   }
+
+  // if (velocity > 0.0f) {
+  //   velocity -= 0.0000001f;
+  //   m_trackBallModel.setVelocity(velocity);
+  // }
+  
 
   m_viewMatrix =
       glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f + m_zoom),

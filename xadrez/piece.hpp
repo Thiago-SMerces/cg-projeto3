@@ -18,6 +18,8 @@ struct Piece {
   float z_pos = 0.18f;
   float shininess{};
   int trianglesDraw{};
+  char color;
+  int index;
   Model model{};
   glm::mat4 model_matrix{1.0f};
   glm::vec3 position{x_pos, y_pos, z_pos};

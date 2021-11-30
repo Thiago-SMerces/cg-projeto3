@@ -31,6 +31,9 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   int move_id = 0;
   bool selector = false;
   int selected_piece;
+  int modifier = 1;
+
+  float velocity{0.0f};
 
   Movements mover;
 
@@ -38,6 +41,7 @@ class OpenGLWindow : public abcg::OpenGLWindow {
   glm::vec3 player1_position{};
   std::vector<Piece> player2_pieces;
   glm::vec3 player2_position{};
+  std::vector<Piece> players_pieces;
 
   std::vector<std::string> filepaths{
                                 "pieces/rook4.obj",
