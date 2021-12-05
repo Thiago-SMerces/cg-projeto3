@@ -195,3 +195,7 @@ Thiago Silva das Mercês RA - 1120181014
 | Dama (Rainha)   | https://www.models-resource.com/ds_dsi/sonicrush/model/11674/                  |
 | Rei             | https://www.models-resource.com/ds_dsi/sonicrush/model/11674/                  |
 | Peão            | https://www.models-resource.com/ds_dsi/sonicrush/model/11674/                  |
+
+[3] Fonte utilizada para exibir vencedor:
+
+https://www.1001freefonts.com/alex-brush.font
