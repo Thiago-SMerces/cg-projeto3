@@ -42,7 +42,10 @@ de maneira mais eficiente.
 O mesmo seria feito para os peões, repetindo o mesmo objeto 8 vezes para cada jogador. Porém os peões possuem a 
 propriedade de promoção. Uma vez que um peão chega ao fim do tabuleiro, este pode ser promovido para qualquer outra 
 peça do tabuleiro (exceto o rei). Então para previnir que ao promover um peão, todos sejam aparentemente promovidos, 
-foi melhor atribuir separadamente cada atributo dos peões.
+foi melhor atribuir separadamente cada atributo dos peões. Importante, a promoção dos peões está configurada para 
+sempre ser de peão para dama, apenas por facilitar o desenvolvimento. Para mudar de peão para outra peça poderia 
+ser configurado uma chamada a janela de seleção como na parte "load models" das aulas, mas não consegui implementar 
+essa modificação a tempo.
 
 O seletor de movimentos constitui basicamente da mesma estrutura para a renderização das peças, mas chama outro 
 objeto renomeado de Old Rug (literalmente, tapete antigo) para Tile (azulejo/ladrilho). Assim que a partida é iniciada 
