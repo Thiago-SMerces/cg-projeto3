@@ -20,6 +20,9 @@ com exceção do objeto que representa a tela de fundo, que foi encontrado no Th
 Todos objetos utilizados podem ser encontrados na tabela de referências [1] ao final do arquivo, assim como seus 
 respectivos links.
 
+Obs. Como todas as peças possuiam um número muito alto de triângulos na renderização que foram encontradas, foi utilizado 
+o software Meshmixer (https://www.meshmixer.com/) para reduzir o tamanho final da maioria das peças.
+
 
 ### Renderização do fundo e do tabuleiro
 
@@ -156,6 +159,7 @@ parâmetros (shaders, tipos de mapeamento, cores diferentes, entre outros).
 | Seta para Baixo | Move o seletor para baixo                                                                      |
 | A               | Olhar para a esquerda                                                                          |
 | D               | Olhar para a direita                                                                           |
+| R               | Reinicia o jogo se estiver em estado final "xeque-mate"/rei capturado                          |
 | Clique Esquerdo | Habilitar o tabuleiro para a rotação. Rotação feita movendo o mouse quando clique ativo        |
 | Scroll          | Amplia/diminui zoom                                                                            |
 
@@ -166,7 +170,7 @@ O resultado final foi uma aplicação que simula o jogo clássico (com as restri
 dinâmico para criar a ilusão de que o jogo acontece em um ambiente que os jogadores estão sempre correndo (o fundo é de 
 um ambiente do jogo Sonic Rush, chamado Special Stage).
 
-<!-- ![sample4](images/zoom.png) -->
+![sample](images/specialchessdemo.gif)
 
 
 ### Desenvolvido por
