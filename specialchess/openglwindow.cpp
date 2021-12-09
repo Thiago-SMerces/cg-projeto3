@@ -21,8 +21,8 @@ void OpenGLWindow::validatePieceMovement(std::vector<Piece>& currentPieces, int 
 			pieces.reserve(player1Pieces.size() + player2Pieces.size());
 			pieces.insert(pieces.end(), player1Pieces.begin(), player1Pieces.end());
 			pieces.insert(pieces.end(), player2Pieces.begin(), player2Pieces.end());
-			pieceMoves = mover.drawMove(piece, pieces, playerTurn);
-			for (auto & move : pieceMoves) {
+			pieceMoves = mover.drawMove(piece, pieces, playerTurn, static_cast<int>(player1Pieces.size()));
+			for (auto& move : pieceMoves) {
 				loadModel(getAssetsPath() + filePaths[2].c_str(), move, otherMapPaths[0].c_str());
 			}
 		}
@@ -39,7 +39,7 @@ void OpenGLWindow::placePiece(std::vector<Piece>& currentPieces, std::vector<Pie
 			
 			currentPieces[selectedPiece].xPos = move.xPos;
 			currentPieces[selectedPiece].yPos = move.yPos;
-			currentPieces[selectedPiece].first_move = false;
+			currentPieces[selectedPiece].firstMove = false;
 			
 			for (auto index : iter::range(opponentsPieces.size())) {
 				if (compareFloat(move.xPos, opponentsPieces[index].xPos) && 
@@ -54,17 +54,29 @@ void OpenGLWindow::placePiece(std::vector<Piece>& currentPieces, std::vector<Pie
 			
 			// check if the move is castling
 			if (currentPieces[selectedPiece].type == 'k' &&
-				currentPieces[selectedPiece].castling_index != -1) {
-				if (compareFloat(currentPieces[selectedPiece].castling_x, move.xPos)) {
-					int rook_index = currentPieces[selectedPiece].castling_index;
-					if (rook_index > selectedPiece) {
-						currentPieces[rook_index].xPos = currentPieces[selectedPiece].xPos - advance;
+				currentPieces[selectedPiece].castlingIndex != -1) {
+				if (compareFloat(currentPieces[selectedPiece].castlingX, move.xPos)) {
+					if (currentPieces[selectedPiece].color == 'w') {
+						int rookIndex = currentPieces[selectedPiece].castlingIndex;
+						if (rookIndex > selectedPiece) {
+							currentPieces[rookIndex].xPos = currentPieces[selectedPiece].xPos - advance;
+						}
+						else {
+							currentPieces[rookIndex].xPos = currentPieces[selectedPiece].xPos + advance;
+						}
 					}
 					else {
-						currentPieces[rook_index].xPos = currentPieces[selectedPiece].xPos + advance;
+						int rookIndex = abs(currentPieces[selectedPiece].castlingIndex - static_cast<int>(player1Pieces.size()) - 7);
+
+						if (rookIndex < selectedPiece) {
+							currentPieces[rookIndex].xPos = currentPieces[selectedPiece].xPos + 0.165f;
+						}
+						else {
+							currentPieces[rookIndex].xPos = currentPieces[selectedPiece].xPos - 0.165f;
+						}
 					}
 				}
-				currentPieces[selectedPiece].castling_index = -1;
+				currentPieces[selectedPiece].castlingIndex = -1;
 			}
 
 			// check if promoting pawn
@@ -195,7 +207,7 @@ void OpenGLWindow::handleEvent(SDL_Event& event) {
 					movementSelector[1].model.terminateGL();
 					movementSelector.pop_back();
 				}
-				for (auto & move : pieceMoves) {
+				for (auto& move : pieceMoves) {
 					move.model.terminateGL();
 				}
 				pieceMoves.clear();
@@ -316,7 +328,7 @@ void OpenGLWindow::restart() {
 	m_trackBallModel.setVelocity(0.0f);
 }
 
-void OpenGLWindow::loadModel(std::string_view path, Piece &piece, const char* map) {
+void OpenGLWindow::loadModel(std::string_view path, Piece& piece, const char* map) {
 	piece.model.terminateGL();
 
 	piece.model.loadDiffuseTexture(getAssetsPath() + map);
@@ -334,12 +346,12 @@ void OpenGLWindow::loadModel(std::string_view path, Piece &piece, const char* ma
 void OpenGLWindow::bindings(std::vector<Piece>& objects, glm::vec3& rotation, glm::vec3& scale, int index, 
 							float angle, float xPos, float yPos, float zPos) {
 	
-	for (auto &object : objects) {
-		if (index > -1 && !object.is_positioned) {
+	for (auto& object : objects) {
+		if (index > -1 && !object.isPositioned) {
 			object.xPos = xPos;
 			object.yPos = yPos;
 			object.zPos = zPos;
-			object.is_positioned = true;
+			object.isPositioned = true;
 		}
 		object.position = glm::vec3(object.xPos, object.yPos, object.zPos);
 		object.modelMatrix = glm::rotate(object.modelMatrix, glm::wrapAngle(glm::radians(angle)), rotation);

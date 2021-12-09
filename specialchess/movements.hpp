@@ -9,11 +9,12 @@
 
 class Movements {
 	public:
-		std::vector<Piece> drawMove(Piece& piece, std::vector<Piece> pieces, int player_turn);
+		std::vector<Piece> drawMove(Piece& piece, std::vector<Piece> pieces, int playerTurn, int p1PiecesCount);
 
  	private:
   		int player{};
 		int nMoves{};
+		int p1PiecesSize{};
 		float boardEdge{-0.58f};
 		float advance{0.165f};
 		float z{0.04f};

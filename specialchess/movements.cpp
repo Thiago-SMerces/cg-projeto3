@@ -3,9 +3,10 @@
 #include <cppitertools/itertools.hpp>
 #include <iostream>
 
-std::vector<Piece> Movements::drawMove(Piece& piece, std::vector<Piece> pieces, int player_turn) {
-    player = player_turn;
+std::vector<Piece> Movements::drawMove(Piece& piece, std::vector<Piece> pieces, int playerTurn, int p1PiecesCount) {
+    player = playerTurn;
     playersPieces = pieces;
+    p1PiecesSize = p1PiecesCount;
     if (player == 1) {
         advance = 0.165f;
     }
@@ -110,7 +111,7 @@ std::vector<Piece> Movements::movePawn(Piece& pawn) {
     next.xPos = pawn.xPos;
     next.yPos = pawn.yPos + advance;
     next.zPos = z;
-    if (pawn.first_move) {
+    if (pawn.firstMove) {
         nMoves = 2;
     }
 
@@ -297,13 +298,13 @@ std::vector<Piece> Movements::moveQueen(Piece& queen) {
 }
 
 void Movements::cast(Piece& king, Piece& first, int pos, std::vector<Piece>& pieceMoves) {
-	if ((king.first_move && !first.blocked && !next.blocked)) {
+	if ((king.firstMove && !first.blocked && !next.blocked)) {
 		for (auto index : iter::range(static_cast<size_t>(pos), playersPieces.size())) {
 			if (playersPieces[index].type == 'r' && playersPieces[index].color == king.color 
-				&& playersPieces[index].first_move) {
+				&& playersPieces[index].firstMove) {
 				insertElement(next, 's', pieceMoves);
-            	king.castling_index = index;
-				king.castling_x = next.xPos;
+            	king.castlingIndex = index;
+				king.castlingX = next.xPos;
 				break;
 			}
 		}
@@ -366,14 +367,21 @@ std::vector<Piece> Movements::moveKing(Piece& king) {
     blockingPiece = isBlocked(first, playersPieces);
     Piece blockingPiece2 = isBlocked(next, playersPieces);
 
-	cast(king, first, 1, pieceMoves);
+    if (king.color == 'w')
+        cast(king, first, 1, pieceMoves);
+    else
+        cast(king, first, p1PiecesSize + 1, pieceMoves);
 
     next.xPos = second_b;
     first.xPos = first_b;
 
     blockingPiece = isBlocked(first, playersPieces);
     blockingPiece2 = isBlocked(next, playersPieces);
-	cast(king, first, 0, pieceMoves);
+
+    if (king.color == 'w')
+	    cast(king, first, 0, pieceMoves);
+    else
+	    cast(king, first, p1PiecesSize, pieceMoves);
 
     return pieceMoves;
 }

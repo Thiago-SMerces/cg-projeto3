@@ -8,16 +8,16 @@ struct Piece {
 	char type{};
 	char color{};
 
-	bool first_move{true};
-	bool is_positioned{false};
+	bool firstMove{true};
+	bool isPositioned{false};
 	bool blocked{false};
 	bool promoted{false};
 	
-	int castling_index{-1};
+	int castlingIndex{-1};
 	int trianglesDraw{};
 	int index{};
 
-	float castling_x{};
+	float castlingX{};
 	float xPos{0.58f};
 	float yPos{0.58f};
 	float zPos{0.18f};
